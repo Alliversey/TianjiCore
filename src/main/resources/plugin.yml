@@ -3,3 +3,15 @@ version: ${project.version}
 main: org.tianjiserver.tianjicore.TianjiCore
 api-version: '1.21'
 authors: [ Tianji-Community ]
+softdepend: [ Vault ]
+commands:
+  tianji:
+    description: TianjiCore 管理命令
+    usage: /tianji [forge|toggle|reload]
+permissions:
+  tianjicore.command.forge:
+    description: 使用锻造命令为物品添加 lore
+    default: true
+  tianjicore.command.admin:
+    description: 使用 TianjiCore 管理命令
+    default: op

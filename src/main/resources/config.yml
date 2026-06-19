@@ -1,0 +1,15 @@
+modules:
+  recipebugfix:
+    enabled: true
+  phantomspawnblocker:
+    enabled: true
+  endermanmushroombugfix:
+    enabled: true
+  itemloreandsignature:
+    enabled: true
+
+itemloreandsignature:
+  forge:
+    cost: 1000.0
+    title: "物品锻造"
+    text: "输入要添加的 lore"

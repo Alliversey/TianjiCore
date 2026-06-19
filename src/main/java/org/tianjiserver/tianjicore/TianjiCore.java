@@ -1,24 +1,49 @@
 package org.tianjiserver.tianjicore;
 
 import org.bukkit.plugin.java.JavaPlugin;
+import revxrsal.commands.bukkit.BukkitLamp;
 
+/**
+ * TianjiCore 插件主入口。
+ * 负责初始化配置、命令系统与模块生命周期。
+ */
 public class TianjiCore extends JavaPlugin {
 
-  private static TianjiCore instance;
+    private static TianjiCore instance;
+    private TianjiCoreCommand commandHandler;
 
-  @Override
-  public void onEnable() {
-    instance = this;
+    /**
+     * 插件启用入口：初始化配置、模块与命令注册。
+     */
+    @Override
+    public void onEnable() {
+        instance = this;
 
-    saveDefaultConfig();
+        saveDefaultConfig();
 
-    getServer().getPluginManager().registerEvents(new RecipeBugFix(), this);
-    getServer().getPluginManager().registerEvents(new MobControlListener(), this);
+        commandHandler = new TianjiCoreCommand(this);
+        commandHandler.bootstrap();
 
-    getLogger().info("TianjiCore is enabled！");
-  }
+        var lamp = BukkitLamp.builder(this).build();
+        lamp.register(commandHandler);
 
-  public static TianjiCore getInstance() {
-    return instance;
-  }
+        getLogger().info("TianjiCore 已启动");
+    }
+
+    /**
+     * 插件关闭入口：执行模块卸载流程。
+     */
+    @Override
+    public void onDisable() {
+        if (commandHandler != null) {
+            commandHandler.shutdown();
+        }
+    }
+
+    /**
+     * 提供全局插件实例访问入口。
+     */
+    public static TianjiCore getInstance() {
+        return instance;
+    }
 }
