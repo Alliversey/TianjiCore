@@ -5,9 +5,9 @@ api-version: '1.21'
 authors: [ Tianji-Community ]
 softdepend: [ Vault ]
 commands:
-  tianji:
+  tianjicore:
     description: TianjiCore 管理命令
-    usage: /tianji [forge|toggle|reload]
+    usage: /tianjicore [forge|toggle|reload]
 permissions:
   tianjicore.command.forge:
     description: 使用锻造命令为物品添加 lore
