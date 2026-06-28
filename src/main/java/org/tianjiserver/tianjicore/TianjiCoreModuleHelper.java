@@ -1,5 +1,7 @@
 package org.tianjiserver.tianjicore;
 
+import org.tianjiserver.tianjicore.itemloreandsignature.ItemLoreAndSignature;
+
 import java.util.List;
 
 /**
@@ -10,8 +12,8 @@ class TianjiCoreModuleHelper {
 
     private final TianjiCoreModuleManager moduleManager;
 
-    TianjiCoreModuleHelper(TianjiCore plugin) {
-        this.moduleManager = new TianjiCoreModuleManager(plugin);
+    TianjiCoreModuleHelper(TianjiCore plugin, ItemLoreAndSignature itemLoreAndSignature) {
+        this.moduleManager = new TianjiCoreModuleManager(plugin, itemLoreAndSignature);
     }
 
     /**

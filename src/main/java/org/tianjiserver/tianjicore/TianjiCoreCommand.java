@@ -21,8 +21,8 @@ public class TianjiCoreCommand {
     private final MiniMessage mini = MiniMessage.miniMessage();
 
     public TianjiCoreCommand(TianjiCore plugin) {
-        this.moduleHelper = new TianjiCoreModuleHelper(plugin);
         this.itemLoreAndSignature = new ItemLoreAndSignature(plugin);
+        this.moduleHelper = new TianjiCoreModuleHelper(plugin, itemLoreAndSignature);
     }
 
     /**
@@ -112,13 +112,12 @@ public class TianjiCoreCommand {
 
 
     /**
-     * 打开锻造 UI，允许玩家为手中物品追加一行 lore。
+     * 打开 lore 锻造 UI。
      */
     @CommandPermission("tianjicore.command.forge")
-    @Subcommand("forge")
+    @Subcommand({"forge", "lore"})
     public void handleForgeCommand(Player player) {
-        if (!moduleHelper.isModuleEnabled("itemloreandsignature")) {
-            player.sendMessage(mini.deserialize("<red>物品签名锻造模块未启用"));
+        if (!ensureItemLoreModuleEnabled(player)) {
             return;
         }
         itemLoreAndSignature.openForgeUi(player);
@@ -130,11 +129,23 @@ public class TianjiCoreCommand {
     @Subcommand("help")
     public void handleHelpCommand(CommandSender sender) {
         sender.sendMessage(mini.deserialize("<yellow>命令帮助:"));
-        sender.sendMessage(mini.deserialize("<gray>/tianjicore forge <white>打开锻造铁砧，为物品添加一行 lore"));
+        sender.sendMessage(mini.deserialize("<gray>/tianjicore forge <white>打开锻造铁砧，通过第二格按钮切换 lore 操作"));
         sender.sendMessage(mini.deserialize("<gray>/tianjicore toggle <module> <white>开关指定模块"));
         sender.sendMessage(mini.deserialize("<gray>/tianjicore reload <module|plugin> <white>重载插件或指定模块"));
         sender.sendMessage(mini.deserialize("<gray>可开关模块: <aqua>" + String.join(", ", moduleHelper.getToggleableModuleKeys())));
         sender.sendMessage(mini.deserialize("<gray>可重载模块: <aqua>" + String.join(", ", moduleHelper.getModuleKeys())));
         sender.sendMessage(mini.deserialize("<gray>插件重载参数: <aqua>" + moduleHelper.getReloadPluginTarget()));
+    }
+
+    /**
+     * 确认物品 lore 模块已启用。
+     */
+    private boolean ensureItemLoreModuleEnabled(Player player) {
+        if (moduleHelper.isModuleEnabled("itemloreandsignature")) {
+            return true;
+        }
+
+        player.sendMessage(mini.deserialize("<red>物品签名锻造模块未启用"));
+        return false;
     }
 }

@@ -31,11 +31,13 @@ class TianjiCoreModuleManager {
     );
 
     private final TianjiCore plugin;
+    private final ItemLoreAndSignature itemLoreAndSignature;
     private final Map<String, ModuleState> modules = new LinkedHashMap<>();
     private final Map<String, String> moduleAliasIndex = new LinkedHashMap<>();
 
-    TianjiCoreModuleManager(TianjiCore plugin) {
+    TianjiCoreModuleManager(TianjiCore plugin, ItemLoreAndSignature itemLoreAndSignature) {
         this.plugin = plugin;
+        this.itemLoreAndSignature = itemLoreAndSignature;
     }
 
     void bootstrap() {
@@ -68,7 +70,7 @@ class TianjiCoreModuleManager {
                 "itemloreandsignature",
                 "物品签名锻造",
                 true,
-                () -> new ItemLoreAndSignature(plugin),
+                () -> itemLoreAndSignature,
                 "itemsign",
                 "forge",
                 "lore"
@@ -212,7 +214,7 @@ class TianjiCoreModuleManager {
         }
 
         try {
-            // 每次启用都创建新监听器实例，避免复用旧实例引入脏状态。
+            // 通过工厂获取监听器实例，让需要保存 UI 状态的模块可复用同一对象。
             Listener listener = module.listenerFactory.get();
             plugin.getServer().getPluginManager().registerEvents(listener, plugin);
             module.listenerInstance = listener;

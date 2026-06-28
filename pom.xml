@@ -41,7 +41,7 @@
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                             <finalName>${project.name}-${project.version}</finalName>
-                            <minimizeJar>true</minimizeJar>
+                            <minimizeJar>false</minimizeJar>
                             <relocations>
                                 <relocation>
                                     <pattern>revxrsal</pattern>
@@ -103,11 +103,6 @@
                 <artifactId>VaultAPI</artifactId>
                 <version>1.7.1</version>
                 <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>net.wesjd</groupId>
-                <artifactId>anvilgui</artifactId>
-                <version>1.10.4-SNAPSHOT</version>
             </dependency>
         </dependencies>
 </project>
