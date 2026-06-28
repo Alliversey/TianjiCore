@@ -1,7 +1,5 @@
 package org.tianjiserver.tianjicore;
 
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.bukkit.entity.Player;
 import org.tianjiserver.tianjicore.itemloreandsignature.ItemLoreAndSignature;
 
 import java.util.List;
@@ -12,12 +10,9 @@ import java.util.List;
  */
 class TianjiCoreModuleHelper {
 
-    private final ItemLoreAndSignature itemLoreAndSignature;
     private final TianjiCoreModuleManager moduleManager;
-    private final MiniMessage mini = MiniMessage.miniMessage();
 
-    TianjiCoreModuleHelper(TianjiCore plugin) {
-        this.itemLoreAndSignature = new ItemLoreAndSignature(plugin);
+    TianjiCoreModuleHelper(TianjiCore plugin, ItemLoreAndSignature itemLoreAndSignature) {
         this.moduleManager = new TianjiCoreModuleManager(plugin, itemLoreAndSignature);
     }
 
@@ -36,15 +31,15 @@ class TianjiCoreModuleHelper {
     }
 
     /**
-     * 打开物品 lore 锻造界面。
+     * 在指定模块启用时执行操作
      */
-    void openItemLoreForge(Player player) {
-        if (!moduleManager.isModuleEnabled(ItemLoreAndSignature.MODULE_KEY)) {
-            player.sendMessage(mini.deserialize("<red>物品签名锻造模块未启用"));
+    void runWhenModuleEnabled(String moduleInput, Runnable enabledAction, Runnable disabledAction) {
+        if (!moduleManager.isModuleEnabled(moduleInput)) {
+            disabledAction.run();
             return;
         }
 
-        itemLoreAndSignature.openForgeUi(player);
+        enabledAction.run();
     }
 
     /**

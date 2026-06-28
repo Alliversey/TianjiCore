@@ -3,6 +3,7 @@ package org.tianjiserver.tianjicore;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.tianjiserver.tianjicore.itemloreandsignature.ItemLoreAndSignature;
 import revxrsal.commands.annotation.Command;
 import revxrsal.commands.annotation.Subcommand;
 import revxrsal.commands.bukkit.annotation.CommandPermission;
@@ -15,11 +16,15 @@ import revxrsal.commands.bukkit.annotation.CommandPermission;
 @Command({"tianjicore", "tianji", "tc"})
 public class TianjiCoreCommand {
 
+    private static final String ITEM_LORE_MODULE_DISABLED_MESSAGE = "<red>物品签名锻造模块未启用";
+
     private final TianjiCoreModuleHelper moduleHelper;
+    private final ItemLoreAndSignature itemLoreAndSignature;
     private final MiniMessage mini = MiniMessage.miniMessage();
 
     public TianjiCoreCommand(TianjiCore plugin) {
-        this.moduleHelper = new TianjiCoreModuleHelper(plugin);
+        this.itemLoreAndSignature = new ItemLoreAndSignature(plugin);
+        this.moduleHelper = new TianjiCoreModuleHelper(plugin, itemLoreAndSignature);
     }
 
     /**
@@ -114,7 +119,11 @@ public class TianjiCoreCommand {
     @CommandPermission("tianjicore.command.forge")
     @Subcommand({"forge", "lore"})
     public void handleForgeCommand(Player player) {
-        moduleHelper.openItemLoreForge(player);
+        moduleHelper.runWhenModuleEnabled(
+                ItemLoreAndSignature.MODULE_KEY,
+                () -> itemLoreAndSignature.openForgeUi(player),
+                () -> player.sendMessage(mini.deserialize(ITEM_LORE_MODULE_DISABLED_MESSAGE))
+        );
     }
 
     /**
