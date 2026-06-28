@@ -3,7 +3,6 @@ package org.tianjiserver.tianjicore;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.tianjiserver.tianjicore.itemloreandsignature.ItemLoreAndSignature;
 import revxrsal.commands.annotation.Command;
 import revxrsal.commands.annotation.Subcommand;
 import revxrsal.commands.bukkit.annotation.CommandPermission;
@@ -17,12 +16,10 @@ import revxrsal.commands.bukkit.annotation.CommandPermission;
 public class TianjiCoreCommand {
 
     private final TianjiCoreModuleHelper moduleHelper;
-    private final ItemLoreAndSignature itemLoreAndSignature;
     private final MiniMessage mini = MiniMessage.miniMessage();
 
     public TianjiCoreCommand(TianjiCore plugin) {
-        this.itemLoreAndSignature = new ItemLoreAndSignature(plugin);
-        this.moduleHelper = new TianjiCoreModuleHelper(plugin, itemLoreAndSignature);
+        this.moduleHelper = new TianjiCoreModuleHelper(plugin);
     }
 
     /**
@@ -117,10 +114,7 @@ public class TianjiCoreCommand {
     @CommandPermission("tianjicore.command.forge")
     @Subcommand({"forge", "lore"})
     public void handleForgeCommand(Player player) {
-        if (!ensureItemLoreModuleEnabled(player)) {
-            return;
-        }
-        itemLoreAndSignature.openForgeUi(player);
+        moduleHelper.openItemLoreForge(player);
     }
 
     /**
@@ -135,17 +129,5 @@ public class TianjiCoreCommand {
         sender.sendMessage(mini.deserialize("<gray>可开关模块: <aqua>" + String.join(", ", moduleHelper.getToggleableModuleKeys())));
         sender.sendMessage(mini.deserialize("<gray>可重载模块: <aqua>" + String.join(", ", moduleHelper.getModuleKeys())));
         sender.sendMessage(mini.deserialize("<gray>插件重载参数: <aqua>" + moduleHelper.getReloadPluginTarget()));
-    }
-
-    /**
-     * 确认物品 lore 模块已启用。
-     */
-    private boolean ensureItemLoreModuleEnabled(Player player) {
-        if (moduleHelper.isModuleEnabled("itemloreandsignature")) {
-            return true;
-        }
-
-        player.sendMessage(mini.deserialize("<red>物品签名锻造模块未启用"));
-        return false;
     }
 }

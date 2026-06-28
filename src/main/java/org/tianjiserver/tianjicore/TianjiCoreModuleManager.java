@@ -67,7 +67,7 @@ class TianjiCoreModuleManager {
                 "mushroomfix"
         );
         registerModule(
-                "itemloreandsignature",
+                ItemLoreAndSignature.MODULE_KEY,
                 "物品签名锻造",
                 true,
                 () -> itemLoreAndSignature,
