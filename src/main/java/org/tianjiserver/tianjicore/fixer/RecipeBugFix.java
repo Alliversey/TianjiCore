@@ -7,13 +7,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.server.ServerLoadEvent;
 import org.bukkit.inventory.Recipe;
+import org.tianjiserver.tianjicore.TianjiCore;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import org.tianjiserver.tianjicore.TianjiCore;
+import java.util.logging.Level;
 
 /**
  * 配方同步修复模块。
@@ -21,24 +22,40 @@ import org.tianjiserver.tianjicore.TianjiCore;
  */
 public class RecipeBugFix implements Listener {
 
-    // 启动阶段收集全量配方 key，避免每次玩家加入时重复遍历。
-    List<NamespacedKey> allRecipeKeys;
+    private final TianjiCore plugin;
+    private List<NamespacedKey> allRecipeKeys = List.of();
 
     /**
      * 初始化时缓存当前服务端所有可识别配方。
      */
     public RecipeBugFix() {
-        allRecipeKeys = new ArrayList<>();
+        plugin = TianjiCore.getInstance();
+        refreshRecipeKeys();
+        plugin.getLogger().info("RecipeBugFix 模块已加载");
+    }
+
+    /**
+     * 服务端及其他插件完成加载后重新收集配方。
+     */
+    @EventHandler
+    public void onServerLoad(ServerLoadEvent event) {
+        refreshRecipeKeys();
+    }
+
+    /**
+     * 刷新当前服务端全部带命名空间的配方 key。
+     */
+    private void refreshRecipeKeys() {
+        List<NamespacedKey> recipeKeys = new ArrayList<>();
         Iterator<Recipe> iterator = Bukkit.recipeIterator();
         while (iterator.hasNext()) {
             Recipe recipe = iterator.next();
-            if (recipe instanceof Keyed) {
-                NamespacedKey key = ((Keyed) recipe).getKey();
-                allRecipeKeys.add(key);
+            if (recipe instanceof Keyed keyed) {
+                recipeKeys.add(keyed.getKey());
             }
         }
-        TianjiCore.getInstance().getLogger().info("Recipe collected");
-        TianjiCore.getInstance().getLogger().info("RecipeBugFix feature is loaded");
+        allRecipeKeys = List.copyOf(recipeKeys);
+        plugin.getLogger().info("RecipeBugFix 已收集 " + allRecipeKeys.size() + " 个配方");
     }
 
     /**
@@ -47,12 +64,32 @@ public class RecipeBugFix implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
+        // 等待服务端完成原生登录同步，避免补发结果被后续登录数据覆盖。
+        Bukkit.getScheduler().runTask(plugin, () -> synchronizeRecipes(player));
+    }
+
+    /**
+     * 为已完成登录的玩家补发服务端配方。
+     */
+    private void synchronizeRecipes(Player player) {
+        if (!player.isOnline()) {
+            return;
+        }
+
         try {
             // 统一为玩家解锁已收集配方，修复客户端“需管理员授予配方”的错误提示。
-            player.discoverRecipes(allRecipeKeys);
-            Bukkit.getLogger().info("[RecipeBugFix] Player " + player.getName() + " received recipe");
-        } catch (Exception e) {
-            Bukkit.getLogger().severe("[RecipeBugFix] " + e.getMessage());
+            int discoveredRecipeCount = player.discoverRecipes(allRecipeKeys);
+            plugin.getLogger().info(
+                    "RecipeBugFix 已为玩家 " + player.getName()
+                            + " 同步 " + allRecipeKeys.size() + " 个配方，其中新解锁 "
+                            + discoveredRecipeCount + " 个"
+            );
+        } catch (Exception exception) {
+            plugin.getLogger().log(
+                    Level.SEVERE,
+                    "RecipeBugFix 为玩家 " + player.getName() + " 同步配方失败",
+                    exception
+            );
         }
     }
 

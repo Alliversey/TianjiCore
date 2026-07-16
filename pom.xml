@@ -6,13 +6,15 @@
 
     <groupId>org.tianjiserver</groupId>
     <artifactId>TianjiCore</artifactId>
-    <version>1.1</version>
+    <version>1.2</version>
     <packaging>jar</packaging>
 
     <name>TianjiCore</name>
 
     <properties>
-        <java.version>21</java.version>
+        <java.version>25</java.version>
+        <paper.version>26.2.build.60-beta</paper.version>
+        <lamp.version>4.0.0-rc.17</lamp.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -24,14 +26,13 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.13.0</version>
                 <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
+                    <release>${java.version}</release>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.5.3</version>
+                <version>3.6.2</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -85,18 +86,18 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.21.11-R0.1-SNAPSHOT</version>
+            <version>${paper.version}</version>
             <scope>provided</scope>
         </dependency>
             <dependency>
                 <groupId>io.github.revxrsal</groupId>
                 <artifactId>lamp.common</artifactId>
-                <version>4.0.0-rc.16</version>
+                <version>${lamp.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.github.revxrsal</groupId>
                 <artifactId>lamp.bukkit</artifactId>
-                <version>4.0.0-rc.16</version>
+                <version>${lamp.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.github.MilkBowl</groupId>

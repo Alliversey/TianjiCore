@@ -6,7 +6,7 @@ modules:
   endermanmushroombugfix:
     enabled: true
   itemloreandsignature:
-    enabled: true
+    enabled: false
 
 itemloreandsignature:
   forge:

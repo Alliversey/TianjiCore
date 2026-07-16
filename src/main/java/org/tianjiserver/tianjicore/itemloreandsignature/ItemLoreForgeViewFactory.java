@@ -41,11 +41,19 @@ final class ItemLoreForgeViewFactory {
         }
 
         meta.displayName(mini.deserialize(operation.buttonName()));
-        meta.lore(List.of(
-                mini.deserialize("<gray>左键切换下一种模式"),
-                mini.deserialize("<gray>右键切换上一种模式"),
-                mini.deserialize(operation.buttonHint())
-        ));
+        List<Component> lore = operation.requiresText()
+                ? List.of(
+                        mini.deserialize("<gray>左键切换下一种模式"),
+                        mini.deserialize("<gray>右键切换上一种模式"),
+                        mini.deserialize("<gray>文本支持 <white>&a</white>、<white>&l</white>、<white>&#66ccff</white> 格式"),
+                        mini.deserialize(operation.buttonHint())
+                )
+                : List.of(
+                        mini.deserialize("<gray>左键切换下一种模式"),
+                        mini.deserialize("<gray>右键切换上一种模式"),
+                        mini.deserialize(operation.buttonHint())
+                );
+        meta.lore(lore);
         item.setItemMeta(meta);
         return item;
     }
@@ -80,7 +88,7 @@ final class ItemLoreForgeViewFactory {
      * 生成带费用的铁砧标题。
      */
     String createTitle(ItemLoreOperation operation, ItemStack item) {
-        int loreEntryCount = loreEditor.hasUsableItem(item) ? loreEditor.snapshot(item).size() : 0;
+        int loreEntryCount = loreEditor.hasUsableItem(item) ? loreEditor.visibleLoreEntryCount(item) : 0;
         return operation.successVerb() + "费用" + forgeConfig.formatCost(forgeConfig.resolveCost(loreEntryCount));
     }
 

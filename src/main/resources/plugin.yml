@@ -1,7 +1,7 @@
 name: TianjiCore
 version: ${project.version}
 main: org.tianjiserver.tianjicore.TianjiCore
-api-version: '1.21'
+api-version: '26.2'
 authors: [ Tianji-Community ]
 softdepend: [ Vault ]
 commands:

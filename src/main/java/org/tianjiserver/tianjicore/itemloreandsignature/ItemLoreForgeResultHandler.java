@@ -44,7 +44,8 @@ final class ItemLoreForgeResultHandler {
         }
 
         List<Component> lore = loreEditor.snapshot(item);
-        int loreIndex = lore.size() - 1;
+        int visibleLoreCount = loreEditor.visibleLoreEntryCount(lore);
+        int loreIndex = loreEditor.lastVisibleLoreIndex(lore);
         if (operation.requiresText() && loreLine.isBlank()) {
             player.sendMessage(mini.deserialize("<red>请输入 lore 内容"));
             return;
@@ -53,7 +54,7 @@ final class ItemLoreForgeResultHandler {
             player.sendMessage(mini.deserialize("<red>请先把默认提示改成要写入的 lore 内容"));
             return;
         }
-        if (operation != ItemLoreOperation.ADD && !validateLoreIndex(player, lore, loreIndex)) {
+        if (operation != ItemLoreOperation.ADD && !validateLoreIndex(player, visibleLoreCount, loreIndex)) {
             return;
         }
 
@@ -63,7 +64,7 @@ final class ItemLoreForgeResultHandler {
             return;
         }
 
-        double cost = forgeConfig.resolveCost(lore.size());
+        double cost = forgeConfig.resolveCost(visibleLoreCount);
         VaultUtil.TransactionResult withdrawResult = VaultUtil.withdraw(player, cost);
         if (!withdrawResult.success()) {
             player.sendMessage(mini.deserialize("<red>余额不足或扣费失败，操作已取消"));
@@ -118,14 +119,14 @@ final class ItemLoreForgeResultHandler {
     /**
      * 校验目标 lore 行是否存在。
      */
-    private boolean validateLoreIndex(Player player, List<Component> lore, int loreIndex) {
-        if (lore.isEmpty()) {
+    private boolean validateLoreIndex(Player player, int visibleLoreCount, int loreIndex) {
+        if (visibleLoreCount == 0) {
             player.sendMessage(mini.deserialize("<red>当前物品还没有 lore"));
             return false;
         }
-        if (loreIndex < 0 || loreIndex >= lore.size()) {
+        if (loreIndex < 0) {
             player.sendMessage(mini.deserialize(
-                    "<red>无效的 lore 行号，当前共有 <gold>" + lore.size() + "</gold> 行"
+                    "<red>无效的 lore 行号，当前共有 <gold>" + visibleLoreCount + "</gold> 行"
             ));
             return false;
         }
